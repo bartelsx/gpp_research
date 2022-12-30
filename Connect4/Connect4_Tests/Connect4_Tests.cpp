@@ -2,11 +2,69 @@
 #include "CppUnitTest.h"
 
 #include "Board.h"
+#include "Connect4Algorithm.h"
 
 using namespace Microsoft::VisualStudio::CppUnitTestFramework;
 
 namespace Connect4Tests
 {
+	TEST_CLASS(AlgorithmTests)
+	{
+	public:
+		TEST_METHOD(ShouldDropInColumn5)
+		{
+			//Arrange
+			Board b{};
+
+			//c0
+			/*nothing*/
+
+			//c1
+			b.Drop(Value::Red, 1);
+			b.Drop(Value::Red, 1);
+			b.Drop(Value::Yellow, 1);
+			b.Drop(Value::Red, 1);
+			b.Drop(Value::Red, 1);
+
+			//c2
+			b.Drop(Value::Yellow, 2);
+			b.Drop(Value::Red, 2);
+			b.Drop(Value::Yellow, 2);
+			b.Drop(Value::Red, 2);
+
+			//c3
+			b.Drop(Value::Yellow, 3);
+			b.Drop(Value::Red, 3);
+			b.Drop(Value::Red, 3);
+			b.Drop(Value::Red, 3);
+			b.Drop(Value::Yellow, 3);
+
+			//c4
+			b.Drop(Value::Red, 4);
+			b.Drop(Value::Yellow, 4);
+			b.Drop(Value::Yellow, 4);
+			b.Drop(Value::Yellow, 4);
+			b.Drop(Value::Red, 4);
+
+			//c5
+			b.Drop(Value::Yellow, 5);
+			b.Drop(Value::Yellow, 5);
+
+			//c6
+			b.Drop(Value::Yellow, 6);
+			b.Drop(Value::Yellow, 6);
+
+			Connect4Algorithm algorithm{};
+
+			//Act
+			auto nextMove = algorithm.GetNextMove(b);
+
+			//Assert
+			//Machine should pick C5, because otherwise Human wins
+			Assert::AreEqual(5, nextMove);
+		}
+	};
+
 	TEST_CLASS(BoardTests)
 	{
 	public:
@@ -105,6 +163,63 @@ namespace Connect4Tests
 			Assert::AreEqual(int(Value::Yellow), int(b.HasFourInARow()));
 		}
 
+		TEST_METHOD(HasForInARow_ReturnsWinner_ForwardDiagonal)
+		{
+			//Arrange
+			Board b{};
+
+			//Act
+			b.Drop(Value::Yellow, 1);
+			b.Drop(Value::Red, 2);
+			b.Drop(Value::Yellow, 2);
+			b.Drop(Value::Red, 3);
+			b.Drop(Value::Red, 3);
+			b.Drop(Value::Yellow, 3);
+			b.Drop(Value::Red, 4);
+			b.Drop(Value::Red, 4);
+			b.Drop(Value::Red, 4);
+			b.Drop(Value::Yellow, 4);
+
+			//Assert
+			Assert::AreEqual(int(Value::Yellow), int(b.HasFourInARow()));
+		}
+
+		TEST_METHOD(HasForInARow_ReturnsWinner_BackwardDiagonal)
+		{
+			//Arrange
+			Board b{};
+
+			//Act
+			b.Drop(Value::Red, 1);
+			b.Drop(Value::Red, 1);
+			b.Drop(Value::Red, 1);
+			b.Drop(Value::Yellow, 1);
+			b.Drop(Value::Red, 2);
+			b.Drop(Value::Red, 2);
+			b.Drop(Value::Yellow, 2);
+			b.Drop(Value::Red, 3);
+			b.Drop(Value::Yellow, 3);
+			b.Drop(Value::Yellow, 4);
+
+			//Assert
+			Assert::AreEqual(int(Value::Yellow), int(b.HasFourInARow()));
+		}
+
+		TEST_METHOD(HasForInARow_ReturnsWinner_Horizontal)
+		{
+			//Arrange
+			Board b{};
+
+			//Act
+			b.Drop(Value::Yellow, 1);
+			b.Drop(Value::Yellow, 2);
+			b.Drop(Value::Yellow, 3);
+			b.Drop(Value::Yellow, 4);
+
+			//Assert
+			Assert::AreEqual(int(Value::Yellow), int(b.HasFourInARow()));
+		}
+
 		TEST_METHOD(CalculateScore_YYYY_Horizontal_Left)
 		{
 			//Arrange
@@ -118,7 +233,7 @@ namespace Connect4Tests
 
 			//Assert
 			//Expected value is 1070 == 1000 (YYYY) + 50 (YYYE) + 20 (YYEE)
-			Assert::AreEqual(1067, b.CalculateScore(Value::Yellow));
+			Assert::AreEqual(1073, b.CalculateScore(Value::Yellow));
 		}
 
 		TEST_METHOD(CalculateScore_YYYY_Vertical)
@@ -127,14 +242,14 @@ namespace Connect4Tests
 			Board b{};
 
 			//Act
-			b.Drop(Value::Yellow, 3);
-			b.Drop(Value::Yellow, 3);
-			b.Drop(Value::Yellow, 3);
-			b.Drop(Value::Yellow, 3);
+			b.Drop(Value::Yellow, 1);
+			b.Drop(Value::Yellow, 1);
+			b.Drop(Value::Yellow, 1);
+			b.Drop(Value::Yellow, 1);
 
 			//Assert
 			//Expected value is 1070 == 1000 (YYYY) + 50 (YYYE) + 20 (YYEE)
-			Assert::AreEqual(1058, b.CalculateScore(Value::Yellow));
+			Assert::AreEqual(1070, b.CalculateScore(Value::Yellow));
 		}
 
 		TEST_METHOD(CalculateScore_YYYY_ForwardDiagonal)
@@ -158,7 +273,7 @@ namespace Connect4Tests
 
 			//Assert
 			//Expected value is 990 == 1000 (YYYY) + 50 (YYYE) + 20 (YYEE) - 40 (RRRE Hor) - 40 (RRRE diag)
-			Assert::AreEqual(981, score);
+			Assert::AreEqual(999, score);
 		}
 	
 
@@ -183,7 +298,7 @@ namespace Connect4Tests
 
 			//Assert
 			//Expected value is 970 == 1000 (YYYY) + 50 (YYYE) - 40 (RRRE Hor) - 40 (RRRE diag)
-			Assert::AreEqual(964, score);
+			Assert::AreEqual(976, score);
 		}
 	TEST_METHOD(CalculateScore_YEYY_Lose)
 		{
@@ -201,7 +316,7 @@ namespace Connect4Tests
 
 			//Assert
 			//Expected value is 970 == 1000 (YYYY) + 50 (YYYE) - 40 (RRRE Hor) - 40 (RRRE diag)
-			Assert::AreEqual(107, score);
+			Assert::AreEqual(113, score);
 		}
 	
 	};

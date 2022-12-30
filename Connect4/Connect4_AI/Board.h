@@ -40,18 +40,18 @@ class Board
 	}
 
 
-	int ScoreWindow(int startRow, int startCol, int deltaRow, int deltaCol, Value piece)
+	int ScoreWindow(int startRow, int startCol, int deltaRow, int deltaCol, Value piece) const
 	{
 		auto opponent = piece == Value::Red ? Value::Yellow : Value::Red;
 		int score{};
 
-		auto same = CountInWindow(startRow, startCol, deltaRow, deltaCol, piece);
-		auto empty = CountInWindow(startRow, startCol, deltaRow, deltaCol, Value::None);
+		const auto same = CountInWindow(startRow, startCol, deltaRow, deltaCol, piece);
+		const auto empty = CountInWindow(startRow, startCol, deltaRow, deltaCol, Value::None);
 		if ( same == 4)
 		{
-			score += 1000;
+			return 1000;
 		}
-		else if (same==3 && empty==1)
+		if (same==3 && empty==1)
 		{
 			score += 50;
 		}
@@ -69,8 +69,8 @@ class Board
 	}
 
 public:
-	static const int COLUMNS = 7;
-	static const int MAX_DISCS_PER_COLUMN = 6;
+	static constexpr int COLUMNS = 7;
+	static constexpr int MAX_DISCS_PER_COLUMN = 6;
 
 	int GetSize(int column) const
 	{
@@ -116,27 +116,65 @@ public:
 
 	Value HasFourInARow()
 	{
-		//Check Vertical
-		for (int col=0; col<COLUMNS; ++col)
+		//Vertical
+		for (int c = 0; c < COLUMNS; ++c)
 		{
-			for (int row=0; row+3<m_values[col].size(); ++row)
+			for (int r = 0; r < MAX_DISCS_PER_COLUMN - 3; ++r)
 			{
-				auto v1 = GetValue(row, col);
-				if (v1 != Value::None 
-					&& v1 == GetValue(row+1, col) 
-					&& v1 == GetValue(row+2, col) 
-					&& v1 == GetValue(row+3,col))
+				auto discColor = GetValue(r, c);
+				if (discColor != Value::None && ScoreWindow(r, c, 1, 0, discColor) >= 1000)
 				{
-					return v1;
+					return discColor;
 				}
 			}
 		}
+
+		//Horizontal
+		for (int r = 0; r < MAX_DISCS_PER_COLUMN; ++r)
+		{
+			for (int c = 0; c < COLUMNS - 3; ++c)
+			{
+				auto discColor = GetValue(r, c);
+				if (discColor != Value::None && ScoreWindow(r, c, 0, 1, discColor) >= 1000)
+				{
+					return discColor;
+				}
+			}
+		}
+
+		//forward diagonal
+		for (int r = 0; r < MAX_DISCS_PER_COLUMN - 3; ++r)
+		{
+			for (int c = 0; c < COLUMNS - 3; ++c)
+			{
+				auto discColor = GetValue(r, c);
+				if (discColor != Value::None && ScoreWindow(r, c, 1, 1, discColor) >= 1000)
+				{
+					return discColor;
+				}
+			}
+		}
+
+		//backward diagonal 
+
+		for (int r = 0; r < MAX_DISCS_PER_COLUMN - 3; ++r)
+		{
+			for (int c = 3; c < COLUMNS; ++c)
+			{
+				auto discColor = GetValue(r, c);
+				if (discColor != Value::None && ScoreWindow(r, c, 1, -1, discColor) >= 1000)
+				{
+					return discColor;
+				}
+			}
+		}
+
 		return Value::None;
 	}
 
 	int CalculateScore(Value discColor)
 	{
-		int score{-3*GetSize(3)};
+		int score{3*GetSize(3)};
 
 		//Vertical
 		for (int c=0; c<COLUMNS; ++c)
