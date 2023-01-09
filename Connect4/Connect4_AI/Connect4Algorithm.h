@@ -1,5 +1,5 @@
+#pragma once
 #include "Board.h"
-#include <iostream>
 
 
 class Connect4Algorithm
@@ -8,7 +8,7 @@ class Connect4Algorithm
 	Value m_HumanPlayer;
 	int m_Level;
 
-	int MiniMax(Board& board, int depth, bool maximizingPlayer, int& col)
+	int AlphaBeta(Board& board, int depth, int alpha, int beta, bool maximizingPlayer, int& col)
 	{
 		Value winner = board.HasFourInARow();
 		if (m_MachinePlayer == winner) return 1'000'000;
@@ -32,7 +32,7 @@ class Connect4Algorithm
 					//std::cout << "Finding Max for column " << c << "\n";
 					board.Drop(m_MachinePlayer, c);
 					int column;
-					int score = MiniMax(board, depth - 1, false, column);
+					int score = AlphaBeta(board, depth - 1, alpha, beta, false, column);
 					board.RemoveDisc(c);
 					//std::cout << " - Column " << c << ", score: " << score << "\n";
 					if (value < score)
@@ -41,7 +41,11 @@ class Connect4Algorithm
 						bestColumn = c;
 						//std::cout << "Setting best column to " << bestColumn << " (c is " << c << ")\n";
 					}
-					
+					alpha = alpha > value ? alpha : value;
+					if (alpha >= beta)
+					{
+						break;
+					}
 				}
 			}
 			//std::cout << "Max: Depth=" << depth << ", bestColumn=" << bestColumn << ", value=" << value << "\n";
@@ -59,7 +63,7 @@ class Connect4Algorithm
 					//std::cout << "Finding Min for column " << c << "\n";
 					board.Drop(m_HumanPlayer, c);
 					int column;
-					int score = MiniMax(board, depth - 1, true, column);
+					int score = AlphaBeta(board, depth - 1, alpha, beta, true, column);
 					board.RemoveDisc(c);
 					//std::cout << " - Column " << c << ", score: " << score << "\n";
 					if (value > score)
@@ -67,7 +71,11 @@ class Connect4Algorithm
 						value = score;
 						bestColumn = c;
 					}
-					
+					beta = beta < value ? beta : value;
+					if (alpha >= beta)
+					{
+						break;
+					}
 				}
 			}
 			//std::cout << "Min: Depth=" << depth << ", bestColumn=" << bestColumn << ", value=" << value << "\n";
@@ -88,7 +96,9 @@ public:
 	{
 		//Minimax algorithm
 		int column;
-		MiniMax(board, 2 + m_Level, true, column);
+		int alpha{ INT32_MIN };
+		int beta{ INT32_MAX };
+		AlphaBeta(board, 2 + m_Level, alpha, beta, true, column);
 		return column;
 	}
 };
