@@ -2,19 +2,25 @@
 //
 
 #include <iostream>
+#include <windows.h>
 #include <conio.h>
 
 #include "Board.h"
 #include "Connect4Algorithm.h"
 
 
-#define LEVEL 8 //0 to 4
+#define LEVEL 0
+//0 to 4
 #define MACHINE_COLOR Value::Red
-#define MACHINE_PLAYS_FIRST true
+#define MACHINE_PLAYS_FIRST false
 
+#define NORMAL 7
+#define RED 12
+#define YELLOW 14
 
 void PrintBoard(const Board& board)
 {
+	HANDLE hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
 	system("CLS");
 	std::cout << "\n";
 	std::cout << " +---------------------------+\n";
@@ -28,7 +34,12 @@ void PrintBoard(const Board& board)
 		for (int column = 0; column < Board::COLUMNS; ++column)
 		{
 			auto value = board.GetValue(row, column);
-			std::cout << " | " << (value == Value::None ? " " : value == Value::Red ? "R" : "Y");
+
+			std::cout << " | ";
+
+			SetConsoleTextAttribute(hConsole, value == Value::None ? NORMAL : value == Value::Red ? RED : YELLOW);
+			std::cout << (value == Value::None ? " " : value == Value::Red ? "R" : "Y");
+			SetConsoleTextAttribute(hConsole, NORMAL);
 		}
 		std::cout << " |\n";
 	}
