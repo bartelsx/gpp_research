@@ -9,8 +9,7 @@
 #include "Connect4Algorithm.h"
 
 
-#define LEVEL 0
-//0 to 4
+#define LEVEL 1//0 to 4
 #define MACHINE_COLOR Value::Red
 #define MACHINE_PLAYS_FIRST false
 
