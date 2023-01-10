@@ -41,7 +41,7 @@ If we see that we can win or block the enemy with a few moves, we don't have to 
 
 I made my algorithm in Connect4_Ai.
 
-I made my algorithm in a different solution so that I can use it with different UIs.
+I made my algorithm in a different projects so that I can use it with different UIs.
 
 
 In the Connect4_Console, you can find everything for the Ui.
