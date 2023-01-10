@@ -58,5 +58,13 @@ It was a new experience, but I'm happy I put some time into it.
 
 
 
+## Sources
+### Links
+https://medium.com/analytics-vidhya/artificial-intelligence-at-play-connect-four-minimax-algorithm-explained-3b5fc32e4a4f
+
+### videos
+https://www.youtube.com/watch?v=KU9Ch59-4vw&t=8s
+
+https://www.youtube.com/watch?v=Sim2mJDZ5Ec
 
 
